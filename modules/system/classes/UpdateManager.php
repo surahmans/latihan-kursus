@@ -311,8 +311,7 @@ class UpdateManager
      */
     public function requestProjectDetails($projectId)
     {
-        $result = $this->requestServerData('project/detail', ['id' => $projectId]);
-        return $result;
+        return $this->requestServerData('project/detail', ['id' => $projectId]);
     }
 
     /**
@@ -365,12 +364,17 @@ class UpdateManager
      */
     public function setBuildNumberManually()
     {
-        $result = $this->requestServerData('ping');
+        $postData = [];
+
+        if (Config::get('cms.edgeUpdates', false)) {
+            $postData['edge'] = 1;
+        }
+
+        $result = $this->requestServerData('ping', $postData);
+
         $build = (int) array_get($result, 'pong', 420);
 
-        Parameter::set([
-            'system::core.build' => $build
-        ]);
+        $this->setBuild($build);
 
         return $build;
     }
@@ -437,11 +441,9 @@ class UpdateManager
 
     /**
      * Extracts the core after it has been downloaded.
-     * @param string $hash
-     * @param string $build
      * @return void
      */
-    public function extractCore($hash, $build)
+    public function extractCore()
     {
         $filePath = $this->getFilePath('core');
 
@@ -450,14 +452,25 @@ class UpdateManager
         }
 
         @unlink($filePath);
+    }
 
-        // Database may fall asleep after this long process
-        Db::reconnect();
-
-        Parameter::set([
-            'system::core.hash'  => $hash,
+    /**
+     * Sets the build number and hash
+     * @param string $hash
+     * @param string $build
+     * @return void
+     */
+    public function setBuild($build, $hash = null)
+    {
+        $params = [
             'system::core.build' => $build
-        ]);
+        ];
+
+        if ($hash) {
+            $params['system::core.hash'] = $hash;
+        }
+
+        Parameter::set($params);
     }
 
     //
@@ -471,8 +484,7 @@ class UpdateManager
      */
     public function requestPluginDetails($name)
     {
-        $result = $this->requestServerData('plugin/detail', ['name' => $name]);
-        return $result;
+        return $this->requestServerData('plugin/detail', ['name' => $name]);
     }
 
     /**
@@ -482,8 +494,7 @@ class UpdateManager
      */
     public function requestPluginContent($name)
     {
-        $result = $this->requestServerData('plugin/content', ['name' => $name]);
-        return $result;
+        return $this->requestServerData('plugin/content', ['name' => $name]);
     }
 
     /**
@@ -538,6 +549,7 @@ class UpdateManager
         }
 
         $this->note('<error>Unable to find:</error> ' . $name);
+
         return $this;
     }
 
@@ -579,8 +591,7 @@ class UpdateManager
      */
     public function requestThemeDetails($name)
     {
-        $result = $this->requestServerData('theme/detail', ['name' => $name]);
-        return $result;
+        return $this->requestServerData('theme/detail', ['name' => $name]);
     }
 
     /**
@@ -592,6 +603,7 @@ class UpdateManager
     public function downloadTheme($name, $hash)
     {
         $fileCode = $name . $hash;
+
         $this->requestServerFile('theme/get', $fileCode, $hash, ['name' => $name]);
     }
 
@@ -620,8 +632,9 @@ class UpdateManager
 
     public function requestProductDetails($codes, $type = null)
     {
-        if ($type != 'plugin' && $type != 'theme')
+        if ($type != 'plugin' && $type != 'theme') {
             $type = 'plugin';
+        }
 
         $codes = (array) $codes;
         $this->loadProductDetailCache();
@@ -669,8 +682,9 @@ class UpdateManager
      */
     public function requestPopularProducts($type = null)
     {
-        if ($type != 'plugin' && $type != 'theme')
+        if ($type != 'plugin' && $type != 'theme') {
             $type = 'plugin';
+        }
 
         $cacheKey = 'system-updates-popular-'.$type;
 
