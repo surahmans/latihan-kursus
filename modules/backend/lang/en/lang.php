@@ -33,6 +33,7 @@ return [
         'not_found_name' => "The partial ':name' is not found."
     ],
     'account' => [
+        'signed_in_as' => 'Signed in as :full_name',
         'sign_out' => 'Sign out',
         'login' => 'Login',
         'reset' => 'Reset',
@@ -439,7 +440,8 @@ return [
     'filter' => [
         'all' => 'all',
         'options_method_not_exists' => "The model class :model must define a method :method() returning options for the ':filter' filter.",
-        'date_all' => 'all period'
+        'date_all' => 'all periods',
+        'number_all' => 'all numbers',
     ],
     'import_export' => [
         'upload_csv_file' => '1. Upload a CSV file',

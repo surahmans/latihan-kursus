@@ -256,9 +256,9 @@ class ServiceProvider extends ModuleServiceProvider
      */
     protected function registerLogging()
     {
-        Event::listen('illuminate.log', function ($level, $message, $context) {
+        Event::listen(\Illuminate\Log\Events\MessageLogged::class, function ($event) {
             if (EventLog::useLogging()) {
-                EventLog::add($message, $level);
+                EventLog::add($event->message, $event->level);
             }
         });
     }
@@ -322,9 +322,9 @@ class ServiceProvider extends ModuleServiceProvider
         /*
          * Override standard Mailer content with template
          */
-        Event::listen('mailer.beforeAddContent', function ($mailer, $message, $view, $data) {
-            MailManager::instance()->addContentToMailer($message, $view, $data);
-            return false;
+        Event::listen('mailer.beforeAddContent', function ($mailer, $message, $view, $data, $raw) {
+            $method = $raw === null ? 'addContentToMailer' : 'addRawContentToMailer';
+            return !MailManager::instance()->$method($message, $raw ?: $view, $data);
         });
     }
 
