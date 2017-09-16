@@ -17,11 +17,6 @@ class FirstTest extends TestCase
          * dan nama plugin Demo
          */
 
-        //--- Put your code below ---
-
-
-        //--- End of your code ---
-
         $this->assertEquals(
             true,
             file_exists(plugins_path() . '/acme/demo/Plugin.php')
@@ -36,11 +31,6 @@ class FirstTest extends TestCase
         /**
          * Buat sebuah model dengan nama Post
          **/
-
-        //--- Put your code below ---
-
-
-        //--- End of your code ---
 
         $this->assertEquals(
             true,
@@ -61,11 +51,6 @@ class FirstTest extends TestCase
          * - published_at (tanggal)
          * - is_published (boolean)
          */
-
-        //--- Put your code below ---
-
-
-        //--- End of your code ---
 
         $this->assertEquals(
             true, Schema::hasColumns('acme_demo_posts', [
@@ -88,11 +73,6 @@ class FirstTest extends TestCase
          * - published_at
          * - is_published
          */
-
-        //--- Put your code below ---
-
-
-        //--- End of your code ---
 
         $this->assertEquals([
             'title', 'content', 'published_at', 'is_published'
