@@ -23,7 +23,7 @@ class SecondTest extends TestCase
         );
         $this->assertEquals(
             true,
-            \Acme\Demo\Models\Address::user() instanceof \October\Rain\Database\Relations\HasOne
+            \Acme\Demo\Models\Address::user() instanceof \October\Rain\Database\Relations\BelongsTo
         );
     }
 
